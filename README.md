@@ -46,26 +46,30 @@ Spring-mass-damper systems model many mechanical and aerospace components, such 
 |Damping coefficient|'c'|Ns/m|finite, >= 0|
 |Spring stiffness|'k'|Nm|finite, > 0|
 |Initial velocity|'v0'|m/s|finite|
-|Initial displacement |'x0'|m|finite|
+|Initial displacement|'x0'|m|finite|
 |Time step|'dt'|s|finite > 0|
-|End time|'T' |s|finite, >= dt|
-|Method |'method'|n/a|"euler" or "rk4"|
+|End time|'T'|s|finite, >= dt|
+|Method|'method'|n/a|"euler" or "rk4"|
 
 
 
-|**Output**|**Unit** |**Meaning**|
+|**Output**|**Unit**|**Meaning**|
 |-|-|-|
 |'t'|s|time grid 0, dt, 2dt, ...|
 |'x'|m|displacement at each time|
 |'v'|m/s|velocity at each time|
 |error metrics|m, m/s|max absolute error and RMSE against the exact solution|
-|observed error |n/a |convergence rate from halving dt|
+|observed error|n/a|convergence rate from halving dt|
 |Euler stability limit|s|largest dt for which explicit Euler does no amplify the solution|
-|runtime |s |wall-clock time of a simulation|
+|runtime|s|wall-clock time of a simulation|
 
 
 
 **Invalid input handling:** non-numeric, non-finite or out-of-domain values (for example `m <= 0`, `c < 0`, `dt <= 0`) and unknown method names raise `ValueError` with a descriptive message. This behaviour is covered by the tests.
+
+
+
+**Named test cases:** `src/cases.py` provides two cases with realistic parameters chosen inside published ranges (a quarter-car suspension and a lightly damped steel specimen), with sources cited in the file. These are representative values, not measurements, so they test the solvers at realistic scales but do not validate the physical model against real data.
 
 
 
@@ -85,7 +89,7 @@ cd spring-damper
 
 python -m venv .venv
 
-source .venv/bin/activate        # Windows: .venv\\\\Scripts\\\\activate
+source .venv/bin/activate        # Windows: .venv\\\\\\\\Scripts\\\\\\\\activate
 
 pip install -r requirements.txt
 
@@ -93,7 +97,7 @@ pip install -r requirements.txt
 
 
 
-\## Usage
+### Usage
 
 
 
@@ -103,7 +107,7 @@ from src.models import SpringDamperParams
 
 from src.solvers import simulate
 
-from src.analysis import error\\\_metrics
+from src.analysis import error\\\\\\\_metrics
 
 
 
@@ -111,7 +115,7 @@ p = SpringDamperParams(m=1.0, c=0.4, k=4.0, x0=1.0, v0=0.0)
 
 t, x, v = simulate(p, dt=0.01, T=5.0, method="rk4")
 
-print(error\\\_metrics(p, t, x, v))
+print(error\\\\\\\_metrics(p, t, x, v))
 
 ```
 
@@ -123,7 +127,7 @@ Run the full study (convergence, stability, timing, figures saved to `figures/`)
 
 ```bash
 
-python -m scripts.run\\\_study
+python -m scripts.run\\\\\\\_study
 
 ```
 
@@ -139,7 +143,7 @@ The notebook `notebooks/analysis.ipynb` reproduces all plots used in the report.
 
 ```bash
 
-python -m pytest --html=docs/test\\\_report.html --self-contained-html
+python -m pytest --html=docs/test\\\\\\\_report.html --self-contained-html
 
 ```
 
@@ -175,7 +179,7 @@ src/         models, analytical solution, solvers, analysis
 
 tests/       pytest suite
 
-scripts/     run\\\_study.py (convergence, stability, timing, figures)
+scripts/     run\\\\\\\_study.py (convergence, stability, timing, figures)
 
 notebooks/   analysis.ipynb (experiments and plots)
 
@@ -213,7 +217,7 @@ docs/        generated API docs, test report, report outline
 
 \- \*\*Used for:\*\* \_\_\_ (for example, scaffolding code, tests and documentation)
 
-\- \*\*How output was checked:\*\* \_\_\_ (for example, rerunning tests, hand-checking formulas, comparing with `solve\\\_ivp`)
+\- \*\*How output was checked:\*\* \_\_\_ (for example, rerunning tests, hand-checking formulas, comparing with `solve\\\\\\\_ivp`)
 
 \- \*\*Errors or unhelpful suggestions:\*\* \_\_\_
 
