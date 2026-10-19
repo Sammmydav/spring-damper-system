@@ -1,0 +1,6 @@
+numpy
+scipy
+matplotlib
+pytest
+pytest-html
+pdoc
