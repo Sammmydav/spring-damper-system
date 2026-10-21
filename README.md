@@ -83,13 +83,13 @@ Requires Python 3.10 or newer.
 
 ```bash
 
-git clone <YOUR REPO URL>
+git clone: https://github.com/Sammmydav/spring-damper-system
 
 cd spring-damper
 
 python -m venv .venv
 
-source .venv/bin/activate        # Windows: .venv\\\\\\\\Scripts\\\\\\\\activate
+source .venv/bin/activate        # Windows: .venv\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\Scripts\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\activate
 
 pip install -r requirements.txt
 
@@ -107,7 +107,7 @@ from src.models import SpringDamperParams
 
 from src.solvers import simulate
 
-from src.analysis import error\\\\\\\_metrics
+from src.analysis import error\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\_metrics
 
 
 
@@ -115,7 +115,21 @@ p = SpringDamperParams(m=1.0, c=0.4, k=4.0, x0=1.0, v0=0.0)
 
 t, x, v = simulate(p, dt=0.01, T=5.0, method="rk4")
 
-print(error\\\\\\\_metrics(p, t, x, v))
+print(error\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\_metrics(p, t, x, v))
+
+```
+
+
+
+A faster pure-float implementation with identical results is also provided:
+
+
+
+```python
+
+from src.fast import simulate\\\_float
+
+t, x, v = simulate\\\_float(p, dt=0.01, T=5.0, method="rk4")
 
 ```
 
@@ -127,7 +141,7 @@ Run the full study (convergence, stability, timing, figures saved to `figures/`)
 
 ```bash
 
-python -m scripts.run\\\\\\\_study
+python -m scripts.run\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\_study
 
 ```
 
@@ -143,13 +157,13 @@ The notebook `notebooks/analysis.ipynb` reproduces all plots used in the report.
 
 ```bash
 
-python -m pytest --html=docs/test\\\\\\\_report.html --self-contained-html
+python -m pytest --html=docs/test\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\_report.html --self-contained-html
 
 ```
 
 
 
-The suite checks input validation, the analytical solution (initial conditions, the ODE residual, energy behaviour), agreement of both solvers with the exact and SciPy solutions, the observed convergence orders (about 1 for Euler and 4 for RK4), and the Euler stability limit.
+The suite checks input validation, the analytical solution (initial conditions, the ODE residual, energy behaviour), agreement of both solvers with the exact and SciPy solutions, the observed convergence orders (about 1 for Euler and 4 for RK4), and the Euler stability limit. It also checks the realistic cases and that the pure-float solvers match the NumPy ones to round-off.
 
 
 
@@ -175,33 +189,33 @@ Open `docs/api/index.html` in a browser.
 
 ```
 
-src/         models, analytical solution, solvers, analysis
+src/         models, analytical solution, solvers, fast solvers, analysis, named cases
 
 tests/       pytest suite
 
-scripts/     run\\\\\\\_study.py (convergence, stability, timing, figures)
+scripts/     run\\\_study.py (convergence, stability, timing, figures)
 
 notebooks/   analysis.ipynb (experiments and plots)
 
 docs/        generated API docs, test report, report outline
-
 ```
 
 
 
-### Key results
+### Key Results
 
 
 
-\*(Fill in from your own runs.)\*
+Measured on \[12th Gen intel(R) Core(TM) i5-1235U, Python 3.10.11]; timings vary between machines.
 
 
 
-\- Observed convergence orders: Euler \~ \_\_\_, RK4 \~ \_\_\_.
-
-\- Euler stability limit for the test case: dt <= \_\_\_ s.
-
-\- Time to reach a max error of 1e-6 m: Euler \_\_\_ ms, RK4 \_\_\_ ms.
+* Observed convergence orders: Euler \~ 1.02, RK4 \~ 4.00 (finest step).
+* Euler stability limit for the test case: dt <= 0.1 s (2\*zeta/omega\_n).
+* Per step (NumPy solvers, dt = 0.001 s): Euler 3.6us, RK4 17.5 us.
+* Time to reach max error of 1e-6 m (NumPy solvers): RK4 2.47 ms; Euler about s (extrapolated, as Euler never reaches 1e-6 m in the tested range)
+* Pure-float solvers are 13.0x (Euler) and 24.1x (RK4) faster than the NumPy versions.
+* 64 automated tests pass.
 
 
 
@@ -213,15 +227,15 @@ docs/        generated API docs, test report, report outline
 
 
 
-\- \*\*Tools used:\*\* \_\_\_
+\- **Tools used:** Claude AI
 
-\- \*\*Used for:\*\* \_\_\_ (for example, scaffolding code, tests and documentation)
+\- **Used for:** Generating basic ideas that could be used for project. Scaffolding code and checking/fixing problems endured throughout coding process. Produced outlines/formatting/structure for documents such as README.md and the report. Performed checks over project to ensure guideline was being followed, and project worked correctly as designed.
 
-\- \*\*How output was checked:\*\* \_\_\_ (for example, rerunning tests, hand-checking formulas, comparing with `solve\\\\\\\_ivp`)
+\- **How output was checked: F**or example, rerunning tests, hand-checking formulas
 
-\- \*\*Errors or unhelpful suggestions:\*\* \_\_\_
+\- **Errors or unhelpful suggestions:** Generated code trying to fix an issue that couldn't correctly or performed incorrect task that was wasn't required or wrong. Suggested ideas as part of the project that fell outside of guidelines or we physically impossible to do. Incorrectly predicted/calculated results and timings, so I had to create a file to fix this.
 
-\- \*\*Decisions that were mine:\*\* \_\_\_
+\- **Decisions that were mine:** The topic that was chosen for the project, improvements that should be made and implemented for the project, contents of documents such as README.md and report.
 
 
 
