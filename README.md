@@ -16,9 +16,7 @@ Numerical simulation of the free damped oscillator
 
 
 
-Explicit Euler (baseline) is compared with classical fourth-order Runge-Kutta (RK4). Both are validated against the exact analytical solution and an independent SciPy reference, and analysed for convergence, stability and performance.
-
-
+Explicit Euler (baseline) is compared with RK4 and with alternative integrators (backward Euler, sympletic (semi-implicit) Euler, SciPy RK45 and DOP853). All are validated against the exact analytical solution and analysed for convergence, stability, cost and performance.
 
 ### Engineering context
 
@@ -49,7 +47,7 @@ Spring-mass-damper systems model many mechanical and aerospace components, such 
 |Initial displacement|'x0'|m|finite|
 |Time step|'dt'|s|finite > 0|
 |End time|'T'|s|finite, >= dt|
-|Method|'method'|n/a|"euler" or "rk4"|
+|Method|'method'|n/a|"euler", "rk4", "backward\_euler", "symplectic\_euler" |
 
 
 
@@ -89,7 +87,7 @@ cd spring-damper
 
 python -m venv .venv
 
-source .venv/bin/activate        # Windows: .venv\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\Scripts\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\activate
+source .venv/bin/activate        # Windows: .venv\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\Scripts\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\activate
 
 pip install -r requirements.txt
 
@@ -107,7 +105,7 @@ from src.models import SpringDamperParams
 
 from src.solvers import simulate
 
-from src.analysis import error\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\_metrics
+from src.analysis import error\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\_metrics
 
 
 
@@ -115,7 +113,7 @@ p = SpringDamperParams(m=1.0, c=0.4, k=4.0, x0=1.0, v0=0.0)
 
 t, x, v = simulate(p, dt=0.01, T=5.0, method="rk4")
 
-print(error\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\_metrics(p, t, x, v))
+print(error\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\_metrics(p, t, x, v))
 
 ```
 
@@ -127,9 +125,27 @@ A faster pure-float implementation with identical results is also provided:
 
 ```python
 
-from src.fast import simulate\\\_float
+from src.fast import simulate\\\\\\\_float
 
-t, x, v = simulate\\\_float(p, dt=0.01, T=5.0, method="rk4")
+t, x, v = simulate\\\\\\\_float(p, dt=0.01, T=5.0, method="rk4")
+
+```
+
+
+
+Alternative integrators (`src/alternatives.py`):
+
+
+
+```python
+
+from src.alternatives import simulate\_alternative, simulate\_scipy
+
+
+
+t, x, v = simulate\_alternative(p, dt=0.001, T=5.0, method="backward\_euler")
+
+t, x, v, nfev = simulate\_scipy(p, dt=0.01, T=5.0, method="DOP853")
 
 ```
 
@@ -141,7 +157,9 @@ Run the full study (convergence, stability, timing, figures saved to `figures/`)
 
 ```bash
 
-python -m scripts.run\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\_study
+python -m scripts.run\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\_study
+python -m scripts.alternatives\_study   # comparison of alternative integrators
+
 
 ```
 
@@ -157,13 +175,13 @@ The notebook `notebooks/analysis.ipynb` reproduces all plots used in the report.
 
 ```bash
 
-python -m pytest --html=docs/test\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\_report.html --self-contained-html
+python -m pytest --html=docs/test\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\_report.html --self-contained-html
 
 ```
 
 
 
-The suite checks input validation, the analytical solution (initial conditions, the ODE residual, energy behaviour), agreement of both solvers with the exact and SciPy solutions, the observed convergence orders (about 1 for Euler and 4 for RK4), and the Euler stability limit. It also checks the realistic cases and that the pure-float solvers match the NumPy ones to round-off.
+The suite checks input validation, the analytical solution (initial conditions, the ODE residual, energy behaviour), agreement of both solvers with the exact and SciPy solutions, the observed convergence orders (about 1 for Euler and 4 for RK4), and the Euler stability limit. It also checks the realistic cases and that the pure-float solvers match the NumPy ones to round-off and the alternative integrators (convergence, energy behaviour, stability).
 
 
 
@@ -181,19 +199,17 @@ python -m pdoc src -o docs/api
 
 Open `docs/api/index.html` in a browser.
 
-
-
 ### Repository layout
 
 
 
 ```
 
-src/         models, analytical solution, solvers, fast solvers, analysis, named cases
+src/         models, analytical solution, solvers, fast solvers, alternatives, analysis, named cases
 
 tests/       pytest suite
 
-scripts/     run\\\_study.py (convergence, stability, timing, figures)
+scripts/     run\_study.py, alternatives\_study.py, timing\_check.py
 
 notebooks/   analysis.ipynb (experiments and plots)
 
@@ -215,7 +231,9 @@ Measured on \[12th Gen intel(R) Core(TM) i5-1235U, Python 3.10.11]; timings vary
 * Per step (NumPy solvers, dt = 0.001 s): Euler 3.6us, RK4 17.5 us.
 * Time to reach max error of 1e-6 m (NumPy solvers): RK4 2.47 ms; Euler about s (extrapolated, as Euler never reaches 1e-6 m in the tested range)
 * Pure-float solvers are 13.0x (Euler) and 24.1x (RK4) faster than the NumPy versions.
-* 64 automated tests pass.
+* 84 automated tests pass.
+* Main case at dt = 0.001 s: Euler and backward Euler both reach about 3.7e-3 m; symplectic Euler 9.9e-4 m. RK4 reaches 3.0e-6 m with 400 RHS evaluations (dt = 0.05 s). SciPy RK45 reaches 5.4e-7 m (362 evaluations) and DOP853 1.1e-9 m (404 evaluations) but is slower in wall-clock time.
+* Undamped energy after 50 s: Euler +639%, backward Euler -86%, symplectic Euler +0.9%, RK4 -4.4e-9 (relative).
 
 
 
