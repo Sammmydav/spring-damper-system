@@ -52,8 +52,11 @@ def simulate_float(params: SpringDamperParams, dt: float, T: float,
     if T < dt:
         raise ValueError(f"T must be >= dt, got T={T}, dt={dt}")
 
+    # Divide once outside the loop: the acceleration only needs c/m and k/m.
     c_m, k_m = params.c / params.m, params.k / params.m   # acceleration = -(c/m) v - (k/m) x
     n = int(round(T / dt))
+    # Plain lists are cheaper to write scalar values into than NumPy arrays; they are
+    # converted to arrays at the end.
     xs = [0.0] * (n + 1)
     vs = [0.0] * (n + 1)
     x, v = float(params.x0), float(params.v0)
@@ -62,11 +65,14 @@ def simulate_float(params: SpringDamperParams, dt: float, T: float,
     if method == "euler":
         for i in range(n):
             a = -(c_m * v + k_m * x)
+            # Tuple assignment so both updates use the old x and v, not a half-updated state.
             x, v = x + dt * v, v + dt * a
             xs[i + 1], vs[i + 1] = x, v
     else:  # rk4
         h2, h6 = 0.5 * dt, dt / 6.0
         for i in range(n):
+            # Same RK4 scheme as src.solvers, with x and v as separate scalars: (k1x, k1v) to
+            # (k4x, k4v) are the four slope estimates.
             k1x, k1v = v, -(c_m * v + k_m * x)
             xa, va = x + h2 * k1x, v + h2 * k1v
             k2x, k2v = va, -(c_m * va + k_m * xa)
@@ -74,6 +80,7 @@ def simulate_float(params: SpringDamperParams, dt: float, T: float,
             k3x, k3v = vb, -(c_m * vb + k_m * xb)
             xc, vc = x + dt * k3x, v + dt * k3v
             k4x, k4v = vc, -(c_m * vc + k_m * xc)
+            # Weighted 1-2-2-1 average of the four slopes, times dt/6.
             x += h6 * (k1x + 2.0 * k2x + 2.0 * k3x + k4x)
             v += h6 * (k1v + 2.0 * k2v + 2.0 * k3v + k4v)
             xs[i + 1], vs[i + 1] = x, v
