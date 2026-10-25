@@ -14,6 +14,7 @@ from .models import SpringDamperParams
 
 def _rhs(params: SpringDamperParams, y: np.ndarray) -> np.ndarray:
     """Right-hand side f(y) of the first-order system (one evaluation)."""
+    # y' = f(y) with y = [x, v] turns m x'' + c x' + k x = 0 into a first-order system.
     x, v = y
     return np.array([v, -(params.c * v + params.k * x) / params.m])
 
@@ -25,6 +26,8 @@ def euler_step(params: SpringDamperParams, y: np.ndarray, dt: float) -> np.ndarr
 
 def rk4_step(params: SpringDamperParams, y: np.ndarray, dt: float) -> np.ndarray:
     """One classical Runge-Kutta step. 4 RHS evaluations, 4th-order accurate."""
+    # k1..k4 are slope estimates at the start, two midpoints and the end of the step; the
+    # 1-2-2-1 weighting gives fourth-order accuracy.
     k1 = _rhs(params, y)
     k2 = _rhs(params, y + 0.5 * dt * k1)
     k3 = _rhs(params, y + 0.5 * dt * k2)
@@ -60,6 +63,7 @@ def simulate(params: SpringDamperParams, dt: float, T: float, method: str = "rk4
     ValueError
         For an unknown method or invalid ``dt`` / ``T``.
     """
+    # Validate before computing anything so bad inputs fail with a clear message.
     if method not in METHODS:
         raise ValueError(f"unknown method {method!r}; choose from {sorted(METHODS)}")
     for name, val in (("dt", dt), ("T", T)):
@@ -71,8 +75,10 @@ def simulate(params: SpringDamperParams, dt: float, T: float, method: str = "rk4
         raise ValueError(f"T must be >= dt, got T={T}, dt={dt}")
 
     step = METHODS[method]
+    # Round to a whole number of steps so the grid starts at 0 with uniform spacing.
     n = int(round(T / dt))
     t = dt * np.arange(n + 1)
+    # Store the whole history: 16 bytes per step, so memory grows as 1/dt.
     y = np.empty((n + 1, 2))
     y[0] = (params.x0, params.v0)
     for i in range(n):
@@ -95,9 +101,12 @@ def simulate_reference(params: SpringDamperParams, t):
     x, v : numpy.ndarray
         Displacement and velocity at ``t``.
     """
+    # Imported here so SciPy is only needed when the reference solver is used.
     from scipy.integrate import solve_ivp
 
     t = np.asarray(t, dtype=float)
+    # DOP853 with very tight tolerances acts as a near-exact reference, independent of the
+    # analytical formulas.
     sol = solve_ivp(
         lambda _t, y: _rhs(params, y),
         (t[0], t[-1]),

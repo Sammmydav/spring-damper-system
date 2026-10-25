@@ -47,12 +47,18 @@ class SpringDamperParams:
     v0: float = 0.0
 
     def __post_init__(self) -> None:
+        # Check every field the same way so no input can slip through unvalidated.
         for name in ("m", "c", "k", "x0", "v0"):
             value = getattr(self, name)
+            # bool is a subclass of int, so True would otherwise pass as 1.0; reject it
+            # explicitly.
             if isinstance(value, bool) or not isinstance(value, (int, float)):
                 raise ValueError(f"{name} must be a real number, got {value!r}")
+            # nan and inf would silently corrupt every later calculation, so fail early.
             if not math.isfinite(value):
                 raise ValueError(f"{name} must be finite, got {value!r}")
+        # c = 0 is allowed (undamped), but m and k must be strictly positive or omega_n is
+        # undefined.
         if self.m <= 0:
             raise ValueError(f"mass m must be > 0, got {self.m}")
         if self.k <= 0:
@@ -68,14 +74,19 @@ class SpringDamperParams:
     @property
     def zeta(self) -> float:
         """Damping ratio c / (2 sqrt(k m)) (dimensionless)."""
+        # Ratio of c to the critical damping coefficient 2 sqrt(k m); it fixes the damping
+        # regime.
         return self.c / (2.0 * math.sqrt(self.k * self.m))
 
     @property
     def regime(self) -> str:
         """Damping regime: 'undamped', 'underdamped', 'critical' or 'overdamped'."""
         z = self.zeta
+        # Exact equality is safe here because c = 0.0 gives exactly 0.0.
         if z == 0.0:
             return "undamped"
+        # zeta is computed, so critical damping needs a tolerance rather than an equality
+        # test.
         if abs(z - 1.0) < 1e-9:
             return "critical"
         return "underdamped" if z < 1.0 else "overdamped"
