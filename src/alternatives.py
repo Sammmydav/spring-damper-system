@@ -68,12 +68,18 @@ def simulate_alternative(params: SpringDamperParams, dt: float, T: float,
     xs[0], vs[0] = x, v
 
     if method == "backward_euler":
+        # Backward Euler solves (I - dt A) y1 = y0. For this 2 x 2 matrix the inverse is
+        # written out in closed form, so no iteration or linear solver is needed.
         det = 1.0 + dt * c_m + dt * dt * k_m           # det(I - dt A)
         for i in range(n):
+            # Multiply the old state by the inverse; tuple assignment keeps both outputs based
+            # on the old x and v.
             x, v = ((1.0 + dt * c_m) * x + dt * v) / det, (v - dt * k_m * x) / det
             xs[i + 1], vs[i + 1] = x, v
     else:  # symplectic_euler
         for i in range(n):
+            # Update velocity first, then use the NEW velocity to update position: this
+            # ordering keeps energy bounded when c = 0. Damping is treated explicitly.
             v = v - dt * (c_m * v + k_m * x)
             x = x + dt * v
             xs[i + 1], vs[i + 1] = x, v
@@ -118,8 +124,13 @@ def simulate_scipy(params: SpringDamperParams, dt: float, T: float,
     n = int(round(T / dt))
     t = dt * np.arange(n + 1)
     c_m, k_m = params.c / params.m, params.k / params.m
+    # t_eval samples the adaptive solution on the same grid as the fixed-step methods, so
+    # errors are directly comparable.
     sol = solve_ivp(lambda _t, y: [y[1], -(c_m * y[1] + k_m * y[0])], (0.0, t[-1]),
                     [params.x0, params.v0], t_eval=t, method=method, rtol=rtol, atol=atol)
+    # solve_ivp reports failure through sol.success instead of raising, so check it
+    # explicitly.
     if not sol.success:
         raise ValueError(f"solve_ivp failed: {sol.message}")
+    # nfev counts right-hand-side evaluations, a machine-independent cost measure.
     return t, sol.y[0], sol.y[1], int(sol.nfev)
