@@ -47,7 +47,7 @@ Spring-mass-damper systems model many mechanical and aerospace components, such 
 |Initial displacement|'x0'|m|finite|
 |Time step|'dt'|s|finite > 0|
 |End time|'T'|s|finite, >= dt|
-|Method|'method'|n/a|"euler", "rk4", "backward\_euler", "symplectic\_euler" |
+|Method|'method'|n/a|"euler", "rk4", "backward\_euler", "symplectic\_euler"|
 
 
 
@@ -87,7 +87,7 @@ cd spring-damper
 
 python -m venv .venv
 
-source .venv/bin/activate        # Windows: .venv\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\Scripts\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\activate
+source .venv/bin/activate        # Windows: .venv\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\Scripts\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\activate
 
 pip install -r requirements.txt
 
@@ -105,7 +105,7 @@ from src.models import SpringDamperParams
 
 from src.solvers import simulate
 
-from src.analysis import error\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\_metrics
+from src.analysis import error\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\_metrics
 
 
 
@@ -113,7 +113,7 @@ p = SpringDamperParams(m=1.0, c=0.4, k=4.0, x0=1.0, v0=0.0)
 
 t, x, v = simulate(p, dt=0.01, T=5.0, method="rk4")
 
-print(error\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\_metrics(p, t, x, v))
+print(error\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\_metrics(p, t, x, v))
 
 ```
 
@@ -125,9 +125,9 @@ A faster pure-float implementation with identical results is also provided:
 
 ```python
 
-from src.fast import simulate\\\\\\\_float
+from src.fast import simulate\\\\\\\\\\\\\\\_float
 
-t, x, v = simulate\\\\\\\_float(p, dt=0.01, T=5.0, method="rk4")
+t, x, v = simulate\\\\\\\\\\\\\\\_float(p, dt=0.01, T=5.0, method="rk4")
 
 ```
 
@@ -139,13 +139,13 @@ Alternative integrators (`src/alternatives.py`):
 
 ```python
 
-from src.alternatives import simulate\_alternative, simulate\_scipy
+from src.alternatives import simulate\\\_alternative, simulate\\\_scipy
 
 
 
-t, x, v = simulate\_alternative(p, dt=0.001, T=5.0, method="backward\_euler")
+t, x, v = simulate\\\_alternative(p, dt=0.001, T=5.0, method="backward\\\_euler")
 
-t, x, v, nfev = simulate\_scipy(p, dt=0.01, T=5.0, method="DOP853")
+t, x, v, nfev = simulate\\\_scipy(p, dt=0.01, T=5.0, method="DOP853")
 
 ```
 
@@ -157,8 +157,8 @@ Run the full study (convergence, stability, timing, figures saved to `figures/`)
 
 ```bash
 
-python -m scripts.run\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\_study
-python -m scripts.alternatives\_study   # comparison of alternative integrators
+python -m scripts.run\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\_study
+python -m scripts.alternatives\\\_study   # comparison of alternative integrators
 
 
 ```
@@ -175,7 +175,7 @@ The notebook `notebooks/analysis.ipynb` reproduces all plots used in the report.
 
 ```bash
 
-python -m pytest --html=docs/test\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\_report.html --self-contained-html
+python -m pytest --html=docs/test\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\_report.html --self-contained-html
 
 ```
 
@@ -209,7 +209,7 @@ src/         models, analytical solution, solvers, fast solvers, alternatives, a
 
 tests/       pytest suite
 
-scripts/     run\_study.py, alternatives\_study.py, timing\_check.py
+scripts/     run\\\_study.py, alternatives\\\_study.py, timing\\\_check.py
 
 notebooks/   analysis.ipynb (experiments and plots)
 
@@ -241,19 +241,17 @@ Measured on \[12th Gen intel(R) Core(TM) i5-1235U, Python 3.10.11]; timings vary
 
 
 
-\*(Rewrite this in your own words as you work. Keep it specific.)\*
+\- **Tools:** Claude (Anthropic, Claude Sonnet 5.5) through claude.ai for most of the work; Google Gemini for general queries, such as explaining concepts.
 
+\- **Used For:** explaining the brief, suggesting topics, and generating the project scaffold (solvers, exact solution, analysis functions, tests, notebook, scripts, README and report drafts, figures). It also explained Git and GitHub and proposed the pure-float optimisation.
 
+\- **Contribution** the initial code and tests were AI-generated and I modified only a small part of the final code. The report and README were drafted by AI and then rewritten or completed by me, including the engineering context, key results and this AI declaration.
 
-\- **Tools used:** Claude AI
+\- **Checking:** I ran the full test suite after every change, reproduced the convergence orders in the notebook, compared results with SciPy's `solve\_ivp`, and checked the cited parameter ranges against the source papers.
 
-\- **Used for:** Generating basic ideas that could be used for project. Scaffolding code and checking/fixing problems endured throughout coding process. Produced outlines/formatting/structure for documents such as README.md and the report. Performed checks over project to ensure guideline was being followed, and project worked correctly as designed.
+\- **My Decision:s** the topic, adding realistic parameter cases, requesting a dedicated alternative-solutions section, the report structure and referencing, and approving each addition.
 
-\- **How output was checked: F**or example, rerunning tests, hand-checking formulas
-
-\- **Errors or unhelpful suggestions:** Generated code trying to fix an issue that couldn't correctly or performed incorrect task that was wasn't required or wrong. Suggested ideas as part of the project that fell outside of guidelines or we physically impossible to do. Incorrectly predicted/calculated results and timings, so I had to create a file to fix this.
-
-\- **Decisions that were mine:** The topic that was chosen for the project, improvements that should be made and implemented for the project, contents of documents such as README.md and report.
+\- **AI Errors Found:** a Git commit grouping that would have failed, a time-to-accuracy calculation that understated RK4's advantage, timings measured on a different machine, and some incorrect source details.
 
 
 
